@@ -3,12 +3,13 @@ const tbodyEl = document.querySelector("tbody");
 const fname = document.getElementById("fname");
 const lname = document.getElementById("lname");
 const email = document.getElementById("email");
-const trElement = document.querySelector("tbody");
+const submit = document.getElementById("submit");
+const tbody = document.querySelector("tbody");
 const personalList = [];
 
 // events
 form.addEventListener("submit", upplodeInfo);
-trElement.addEventListener("click", updateAndDelete);
+tbody.addEventListener("click", updateAndDelete);
 
 // upplode
 
@@ -22,9 +23,13 @@ function upplodeInfo(e) {
 
   const result = valuesControls(values);
   if (result.value) {
-    infoBoxShow(result.value, result.message);
-    peresonListCreat(values);
-    console.log(listPushPersonal(values));
+    if (selectRow) {
+      updateInfo(values, selectRow);
+    } else {
+      infoBoxShow(result.value, result.message);
+      peresonListCreat(values);
+      console.log(listPushPersonal(values));
+    }
   } else {
     console.log(result.value);
     infoBoxShow(result.value, result.message);
@@ -98,7 +103,9 @@ function listPushPersonal(persons) {
   return personalList;
 }
 
-// update and delete code
+// values submit at input for update
+
+selectRow = undefined;
 function updateAndDelete(e) {
   if (e.target.classList.contains("button__delete")) {
     e.target.parentElement.parentElement.parentElement.remove();
@@ -111,7 +118,40 @@ function updateAndDelete(e) {
         console.log(personalList);
       }
     });
+    fname.value = "";
+    lname.value = "";
+    email.value = "";
   } else if (e.target.classList.contains("button__update")) {
-    console.log("update");
+    const trElement = e.target.parentElement.parentElement.parentElement;
+    const updateELEmail = trElement.cells[2];
+    submit.textContent = "Update";
+    fname.value = trElement.cells[0].textContent;
+    lname.value = trElement.cells[1].textContent;
+    email.value = trElement.cells[2].textContent;
+
+    selectRow = updateELEmail;
   }
+}
+
+// update and delete code
+
+function updateInfo(newPerson, updateELEmail) {
+  const trElement = updateELEmail.parentElement;
+  console.log(updateELEmail.textContent);
+  personalList.forEach((person) => {
+    if (person.email === trElement.cells[2].textContent) {
+      person.fname = newPerson.fname;
+      person.lname = newPerson.lname;
+      person.email = newPerson.email;
+      console.log(person);
+    }
+  });
+
+  trElement.cells[0].textContent = newPerson.fname;
+  trElement.cells[1].textContent = newPerson.lname;
+  trElement.cells[2].textContent = newPerson.email;
+
+  submit.textContent = "Submit";
+  console.log(personalList);
+  selectRow = undefined;
 }

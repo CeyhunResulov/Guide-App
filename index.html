@@ -47,7 +47,24 @@
         <th>email</th>
         <th></th>
       </thead>
-      <tbody></tbody>
+      <tbody>
+        <tr>
+          <td>${persons.fname}</td>
+          <td>${persons.lname}</td>
+          <td>${persons.email}</td>
+          <td>
+            <div class="parent__button">
+              <button class="button button__update">
+                <i class="far fa-edit"></i>
+              </button>
+              <button class="button button__delete">
+                <i class="far fa-trash-alt"></i>
+              </button>
+            </div>
+          </td>
+          `
+        </tr>
+      </tbody>
     </table>
 
     <script src="app.js"></script>

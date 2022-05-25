@@ -3,9 +3,12 @@ const tbodyEl = document.querySelector("tbody");
 const fname = document.getElementById("fname");
 const lname = document.getElementById("lname");
 const email = document.getElementById("email");
+const trElement = document.querySelector("tbody");
 const personalList = [];
 
+// events
 form.addEventListener("submit", upplodeInfo);
+trElement.addEventListener("click", updateAndDelete);
 
 // upplode
 
@@ -78,10 +81,12 @@ function peresonListCreat(persons) {
   <td>${persons.lname}</td>
   <td>${persons.email}</td>
   <td>
-    <button class="button"><i class="far fa-edit"></i></button>
+  <div class="parent__button">
+    <button class="button button__update"><i class="far fa-edit"></i></button>
     <button class="button button__delete">
       <i class="far fa-trash-alt"></i>
     </button>
+  </div>
   </td>`;
   tbodyEl.appendChild(trEL);
 }
@@ -91,4 +96,22 @@ function peresonListCreat(persons) {
 function listPushPersonal(persons) {
   personalList.push(persons);
   return personalList;
+}
+
+// update and delete code
+function updateAndDelete(e) {
+  if (e.target.classList.contains("button__delete")) {
+    e.target.parentElement.parentElement.parentElement.remove();
+    personalList.forEach((person, index) => {
+      if (
+        person.email ===
+        e.target.parentElement.parentElement.previousElementSibling.textContent
+      ) {
+        personalList.splice(index, 1);
+        console.log(personalList);
+      }
+    });
+  } else if (e.target.classList.contains("button__update")) {
+    console.log("update");
+  }
 }

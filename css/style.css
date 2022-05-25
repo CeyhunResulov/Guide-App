@@ -71,11 +71,16 @@ hr {
 .button {
   border: none;
   background-color: darkgreen;
+  display: inline;
 }
 .button__delete {
   background-color: red !important;
 }
+.parent__button {
+  display: flex;
+}
 .far {
   font-size: 20px;
   color: white;
+  pointer-events: none;
 }

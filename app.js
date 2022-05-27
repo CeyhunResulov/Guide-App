@@ -5,11 +5,12 @@ const lname = document.getElementById("lname");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
 const tbody = document.querySelector("tbody");
-const personalList = [];
+let personalList = [];
 
 // events
 form.addEventListener("submit", upplodeInfo);
 tbody.addEventListener("click", updateAndDelete);
+document.addEventListener("DOMContentLoaded", personBringOfLS);
 
 // upplode
 
@@ -27,11 +28,12 @@ function upplodeInfo(e) {
       updateInfo(values, selectRow);
     } else {
       infoBoxShow(result.value, result.message);
-      peresonListCreat(values);
-      console.log(listPushPersonal(values));
+      listPushPersonal(values);
+      localStorageUplode(personalList);
+      let persons = JSON.parse(localStorage.getItem("persons"));
+      peresonListCreat(persons[persons.length - 1]);
     }
   } else {
-    console.log(result.value);
     infoBoxShow(result.value, result.message);
   }
 }
@@ -52,21 +54,17 @@ function valuesControls(values) {
 }
 
 // true and wrong box show
-
+const infoBox = document.querySelector(".info__box");
 function infoBoxShow(value, message) {
-  const elDIv = document.createElement("div");
-  const elP = document.createElement("p");
-  elDIv.appendChild(elP);
-  elP.textContent = elDIv.classList.add(`${value}`);
-  elP.textContent = message;
-  document.querySelector("body").insertBefore(elDIv, form);
-
+  infoBox.firstElementChild.textContent = message;
+  infoBox.style.visibility = "visible";
+  if (value) {
+    infoBox.style.border = "1px solid darkgreen";
+  } else {
+    infoBox.style.border = "1px solid red";
+  }
   setTimeout(function infoBoxDelete() {
-    if (form.previousElementSibling.classList.contains("false")) {
-      document.querySelector(".false").remove();
-    } else if (form.previousElementSibling.classList.contains("true")) {
-      document.querySelector(".true").remove();
-    }
+    infoBox.style.visibility = "hidden";
   }, 3000);
 }
 
@@ -80,11 +78,11 @@ function resetValue() {
 
 // personal list creat
 
-function peresonListCreat(persons) {
+function peresonListCreat(person) {
   const trEL = document.createElement("tr");
-  trEL.innerHTML = `<td>${persons.fname}</td>
-  <td>${persons.lname}</td>
-  <td>${persons.email}</td>
+  trEL.innerHTML = `<td>${person.fname}</td>
+  <td>${person.lname}</td>
+  <td>${person.email}</td>
   <td>
   <div class="parent__button">
     <button class="button button__update"><i class="far fa-edit"></i></button>
@@ -115,12 +113,13 @@ function updateAndDelete(e) {
         e.target.parentElement.parentElement.previousElementSibling.textContent
       ) {
         personalList.splice(index, 1);
-        console.log(personalList);
       }
     });
     fname.value = "";
     lname.value = "";
-    email.value = "";
+    email.value = "@gamil.com";
+    console.log(personalList);
+    localStorageUplode(personalList);
   } else if (e.target.classList.contains("button__update")) {
     const trElement = e.target.parentElement.parentElement.parentElement;
     const updateELEmail = trElement.cells[2];
@@ -154,4 +153,21 @@ function updateInfo(newPerson, updateELEmail) {
   submit.textContent = "Submit";
   console.log(personalList);
   selectRow = undefined;
+  localStorageUplode(personalList);
+}
+
+// local storage
+
+function localStorageUplode(personalList) {
+  localStorage.setItem("persons", JSON.stringify(personalList));
+  personalList = JSON.parse(localStorage.getItem("persons"));
+}
+
+// get person at local Storage
+
+function personBringOfLS() {
+  let persons = JSON.parse(localStorage.getItem("persons"));
+  persons.forEach((person) => {
+    peresonListCreat(person);
+  });
 }

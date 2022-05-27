@@ -10,19 +10,12 @@ body {
   flex-direction: column;
   align-items: center;
 }
-.true {
-  border: 1px solid darkgreen;
-  width: 50%;
-  padding: 10px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-.false {
-  border: 1px solid red;
+.info__box {
   width: 50%;
   padding: 10px;
   box-sizing: border-box;
   margin-bottom: 20px;
+  visibility: hidden;
 }
 .form {
   width: 50%;

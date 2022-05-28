@@ -5,7 +5,6 @@ const lname = document.getElementById("lname");
 const email = document.getElementById("email");
 const submit = document.getElementById("submit");
 const tbody = document.querySelector("tbody");
-let personalList = [];
 
 // events
 form.addEventListener("submit", upplodeInfo);
@@ -28,10 +27,7 @@ function upplodeInfo(e) {
       updateInfo(values, selectRow);
     } else {
       infoBoxShow(result.value, result.message);
-      listPushPersonal(values);
-      localStorageUplode(personalList);
-      let persons = JSON.parse(localStorage.getItem("persons"));
-      peresonListCreat(persons[persons.length - 1]);
+      localStorageUplode(values);
     }
   } else {
     infoBoxShow(result.value, result.message);
@@ -73,7 +69,7 @@ function infoBoxShow(value, message) {
 function resetValue() {
   fname.value = "";
   lname.value = "";
-  email.value = "";
+  email.value = "@gmail.com";
 }
 
 // personal list creat
@@ -94,32 +90,29 @@ function peresonListCreat(person) {
   tbodyEl.appendChild(trEL);
 }
 
-// list for personal
-
-function listPushPersonal(persons) {
-  personalList.push(persons);
-  return personalList;
-}
-
 // values submit at input for update
 
 selectRow = undefined;
 function updateAndDelete(e) {
+  let persons = JSON.parse(localStorage.getItem("persons"));
   if (e.target.classList.contains("button__delete")) {
     e.target.parentElement.parentElement.parentElement.remove();
-    personalList.forEach((person, index) => {
+    persons.forEach((person, index) => {
       if (
         person.email ===
         e.target.parentElement.parentElement.previousElementSibling.textContent
       ) {
-        personalList.splice(index, 1);
+        persons.splice(index, 1);
       }
     });
     fname.value = "";
     lname.value = "";
     email.value = "@gamil.com";
-    console.log(personalList);
-    localStorageUplode(personalList);
+    if (persons[0] === undefined) {
+      localStorage.removeItem("persons");
+    } else {
+      localStorage.setItem("persons", JSON.stringify(persons));
+    }
   } else if (e.target.classList.contains("button__update")) {
     const trElement = e.target.parentElement.parentElement.parentElement;
     const updateELEmail = trElement.cells[2];
@@ -135,14 +128,14 @@ function updateAndDelete(e) {
 // update and delete code
 
 function updateInfo(newPerson, updateELEmail) {
+  let persons = JSON.parse(localStorage.getItem("persons"));
   const trElement = updateELEmail.parentElement;
   console.log(updateELEmail.textContent);
-  personalList.forEach((person) => {
+  persons.forEach((person) => {
     if (person.email === trElement.cells[2].textContent) {
       person.fname = newPerson.fname;
       person.lname = newPerson.lname;
       person.email = newPerson.email;
-      console.log(person);
     }
   });
 
@@ -150,24 +143,51 @@ function updateInfo(newPerson, updateELEmail) {
   trElement.cells[1].textContent = newPerson.lname;
   trElement.cells[2].textContent = newPerson.email;
 
+  localStorage.setItem("persons", JSON.stringify(persons));
   submit.textContent = "Submit";
-  console.log(personalList);
   selectRow = undefined;
-  localStorageUplode(personalList);
 }
 
 // local storage
 
-function localStorageUplode(personalList) {
-  localStorage.setItem("persons", JSON.stringify(personalList));
-  personalList = JSON.parse(localStorage.getItem("persons"));
+function localStorageUplode(person) {
+  let personalList;
+  if (localStorage.getItem("persons") === null) {
+    personalList = [];
+    personalList.push(person);
+    localStorage.setItem("persons", JSON.stringify(personalList));
+    peresonListCreat(person);
+  } else {
+    personalList = JSON.parse(localStorage.getItem("persons"));
+    let ifFunc = checkAgainGmail(person, personalList);
+    if (ifFunc) {
+      infoBoxShow(false, "again gmail!!!");
+    } else {
+      personalList.push(person);
+      localStorage.setItem("persons", JSON.stringify(personalList));
+      peresonListCreat(person);
+    }
+  }
 }
 
 // get person at local Storage
 
 function personBringOfLS() {
-  let persons = JSON.parse(localStorage.getItem("persons"));
-  persons.forEach((person) => {
-    peresonListCreat(person);
-  });
+  if (localStorage.getItem("persons") !== null) {
+    let persons = JSON.parse(localStorage.getItem("persons"));
+    persons.forEach((person) => {
+      peresonListCreat(person);
+    });
+  }
+}
+
+// again gmail check
+
+function checkAgainGmail(person, personalList) {
+  for (let i = 0; i < personalList.length; i++) {
+    if (personalList[i]["email"] === person["email"]) {
+      return true;
+    }
+  }
+  // return false;
 }
